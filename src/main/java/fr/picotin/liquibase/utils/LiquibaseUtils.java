@@ -56,7 +56,7 @@ public class LiquibaseUtils {
     /**
      * Get liquibase changelog files.
      *
-     * @param folder The folder to inspect
+     * @param srcFolder The folder to inspect
      * @param filePattern The sql type of liquibase file to search
      * @param filePatternCustomSort The custom pattern to sort files
      * @param customFilesToIgnore List of files to ignore in master changelog
