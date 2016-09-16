@@ -1,6 +1,5 @@
 package fr.picotin.liquibase;
 
-
 import java.io.File;
 import java.util.TreeSet;
 
@@ -30,98 +29,97 @@ import org.apache.maven.plugins.annotations.Parameter;
 import fr.picotin.liquibase.dto.PluginOptionsDTO;
 import fr.picotin.liquibase.utils.LiquibaseUtils;
 
-
 @Mojo(name = "generate", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public class LiquibasePlugin extends AbstractMojo {
 
-    /**
-    *
-    */
-    @Parameter(property = "liquibaseVersion", required = false, defaultValue = "3.1")
-    private String liquibaseVersion;
+	/**
+	*
+	*/
+	@Parameter(property = "liquibaseVersion", required = false, defaultValue = "3.1")
+	private String liquibaseVersion;
 
-    /**
-     *
-     */
-    @Parameter(property = "filesLocation", required = true, defaultValue = "src/main/resources/db/changelogs")
-    private String filesLocation;
+	/**
+	 *
+	 */
+	@Parameter(property = "filesLocation", required = true, defaultValue = "src/main/resources/db/changelogs")
+	private String filesLocation;
 
-    /**
-     *
-     */
-    @Parameter(property = "sqlChangelogFormat", required = true, defaultValue = "postgresql")
-    private String sqlChangelogFormat;
+	/**
+	 *
+	 */
+	@Parameter(property = "sqlChangelogFormat", required = true, defaultValue = "postgresql")
+	private String sqlChangelogFormat;
 
-    /**
-    *
-    */
-    @Parameter(property = "filePattern", required = false, defaultValue = "")
-    private String filePattern;
+	/**
+	*
+	*/
+	@Parameter(property = "filePattern", required = false, defaultValue = "")
+	private String filePattern;
 
-    /**
-    *
-    */
-    @Parameter(property = "filePatternCustomSort", required = false, defaultValue = "")
-    private String filePatternCustomSort;
+	/**
+	*
+	*/
+	@Parameter(property = "filePatternCustomSort", required = false, defaultValue = "")
+	private String filePatternCustomSort;
 
-    /**
-    *
-    */
-    @Parameter(property = "customFilesToIgnore", required = false, defaultValue = "")
-    private String customFilesToIgnore;
+	/**
+	*
+	*/
+	@Parameter(property = "customFilesToIgnore", required = false, defaultValue = "")
+	private String customFilesToIgnore;
 
-    /**
-    *
-    */
-    @Parameter(property = "customFilesToInsert", required = false, defaultValue = "")
-    private String customFilesToInsert;
+	/**
+	*
+	*/
+	@Parameter(property = "customFilesToInsert", required = false, defaultValue = "")
+	private String customFilesToInsert;
 
-    public void execute() throws MojoExecutionException, MojoFailureException {
+	public void execute() throws MojoExecutionException, MojoFailureException {
 
-        LiquibaseUtils liquibaseUtils = new LiquibaseUtils();
+		final LiquibaseUtils liquibaseUtils = new LiquibaseUtils();
 
-        this.displayConfigurationLogs();
-        PluginOptionsDTO pluginOptionsDTO = this.setPluginOptionsDTO();
+		displayConfigurationLogs();
+		final PluginOptionsDTO pluginOptionsDTO = setPluginOptionsDTO();
 
-        getLog().info("Get Liquibase files in project... ");
-        TreeSet<File> files = liquibaseUtils.getLiquibaseFiles(pluginOptionsDTO);
-        getLog().info("Files found : " + files.size());
+		getLog().info("Get Liquibase files in project... ");
+		final TreeSet<File> files = liquibaseUtils.getLiquibaseFiles(pluginOptionsDTO);
+		getLog().info("Files found : " + files.size());
 
-        getLog().info("Generate Changelog master...");
-        liquibaseUtils.createLiquibaseMasterChangelog(pluginOptionsDTO, files);
-        getLog().info("Changelog master generated!");
-    }
+		getLog().info("Generate Changelog master...");
+		liquibaseUtils.createLiquibaseMasterChangelog(pluginOptionsDTO, files);
+		getLog().info("Changelog master generated!");
+	}
 
-    /**
-     * Display configuration info in console.
-     */
-    private void displayConfigurationLogs() {
-        getLog().info("Liquibase Version to match is : " + liquibaseVersion);
-        getLog().info("Changelog location is : " + filesLocation);
-        getLog().info("Sqlformat is : " + sqlChangelogFormat);
-        getLog().info("File Pattern is : " + filePattern);
-        getLog().info("File Pattern Custom Sort is : " + filePatternCustomSort);
-        getLog().info("Custom Files to ignore are : " + customFilesToIgnore);
-        getLog().info("Custom Files to insert are : " + customFilesToInsert);
-    }
-    
-    /**
-     * Set Maven plugin options.
-     * 
-     * @return The DTO with Maven plugin Options.
-     */
-    private PluginOptionsDTO setPluginOptionsDTO() {
-    	PluginOptionsDTO dto = new PluginOptionsDTO();
+	/**
+	 * Display configuration info in console.
+	 */
+	private void displayConfigurationLogs() {
+		getLog().info("Liquibase Version to match is : " + liquibaseVersion);
+		getLog().info("Changelog location is : " + filesLocation);
+		getLog().info("Sqlformat is : " + sqlChangelogFormat);
+		getLog().info("File Pattern is : " + filePattern);
+		getLog().info("File Pattern Custom Sort is : " + filePatternCustomSort);
+		getLog().info("Custom Files to ignore are : " + customFilesToIgnore);
+		getLog().info("Custom Files to insert are : " + customFilesToInsert);
+	}
 
-    	dto.liquibaseVersion= liquibaseVersion;		
-		dto.filesLocation = filesLocation;		
-		dto.sqlChangelogFormat=sqlChangelogFormat;
-		dto.filePattern=filePattern;
-		dto.filePatternCustomSort=filePatternCustomSort;
-		dto.customFilesToIgnore=customFilesToIgnore;
-		dto.customFilesToInsert=customFilesToInsert;
-		
+	/**
+	 * Set Maven plugin options.
+	 * 
+	 * @return The DTO with Maven plugin Options.
+	 */
+	private PluginOptionsDTO setPluginOptionsDTO() {
+		final PluginOptionsDTO dto = new PluginOptionsDTO();
+
+		dto.liquibaseVersion = liquibaseVersion;
+		dto.filesLocation = filesLocation;
+		dto.sqlChangelogFormat = sqlChangelogFormat;
+		dto.filePattern = filePattern;
+		dto.filePatternCustomSort = filePatternCustomSort;
+		dto.customFilesToIgnore = customFilesToIgnore;
+		dto.customFilesToInsert = customFilesToInsert;
+
 		return dto;
-    	
-    }
+
+	}
 }
