@@ -76,17 +76,15 @@ public class LiquibasePlugin extends AbstractMojo {
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
 
-		final LiquibaseUtils liquibaseUtils = new LiquibaseUtils();
-
 		displayConfigurationLogs();
 		final PluginOptionsDTO pluginOptionsDTO = setPluginOptionsDTO();
 
 		getLog().info("Get Liquibase files in project... ");
-		final TreeSet<File> files = liquibaseUtils.getLiquibaseFiles(pluginOptionsDTO);
+		final TreeSet<File> files = LiquibaseUtils.getLiquibaseFiles(pluginOptionsDTO);
 		getLog().info("Files found : " + files.size());
 
 		getLog().info("Generate Changelog master...");
-		liquibaseUtils.createLiquibaseMasterChangelog(pluginOptionsDTO, files);
+		LiquibaseUtils.createLiquibaseMasterChangelog(pluginOptionsDTO, files);
 		getLog().info("Changelog master generated!");
 	}
 
@@ -105,7 +103,7 @@ public class LiquibasePlugin extends AbstractMojo {
 
 	/**
 	 * Set Maven plugin options.
-	 * 
+	 *
 	 * @return The DTO with Maven plugin Options.
 	 */
 	private PluginOptionsDTO setPluginOptionsDTO() {

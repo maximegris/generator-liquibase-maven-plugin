@@ -22,13 +22,6 @@ Here is and example that will generate a db.changelog-master-postgresql.xml.
 						<goals>
 							<goal>generate</goal>
 						</goals>
-						<configuration>
-							<filesLocation>${basedir}/src/main/resources/db/changelogs</filesLocation>
-							<filePattern>^db.changelog-[1-9]+.*-postgresql\.xml$</filePattern>
-							<filePatternCustomSort>[1-9]+\.[0-9]+</filePatternCustomSort>
-							<customFilesToIgnore>db.changelog-2.1-postgresql.xml;db.changelog-2.21-postgresql.xml</customFilesToIgnore>
-							<customFilesToInsert>db.changelog-2.5-postgresql.sql;db.changelog-2.4-postgresql.sql;db.changelog-2.3-postgresql.sql</customFilesToInsert>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -47,6 +40,40 @@ Configuration options (optional)
 | filePatternCustomSort | Apply a custom sort pattern on some files. During comparison, if one or both files don't match the pattern, it use String.equals | Empty string |
 | customFilesToIgnore | List of file to ignore/remove of master changelog. Use ; to separate them | Empty string |
 | customFilesToInsert | List of file which doesn't match the pattern and to insert in master changelog. Use ; to separate them | Empty string |
+
+## Example with configuration options ##
+
+This will generate a db.changelog-master-postgresql.xml.
+It will also ignore some files and insert other files that don't respect the defined files pattern.
+
+```
+  <build>
+		<plugins>
+			<plugin>
+ 				<groupId>com.github.maximegris</groupId>
+				<artifactId>generator-liquibase-maven-plugin</artifactId>
+				<version>1.0.0</version>
+				<executions>
+					<execution>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<filesLocation>${basedir}/src/main/resources/db/changelogs</filesLocation>
+							<filePattern>^db.changelog-[1-9]+.*-postgresql\.xml$</filePattern>
+							<filePatternCustomSort>[1-9]+\.[0-9]+</filePatternCustomSort>
+							<customFilesToIgnore>db.changelog-2.1-postgresql.xml;db.changelog-2.21-postgresql.xml</customFilesToIgnore>
+							<customFilesToInsert>db.changelog-2.5-postgresql.sql;db.changelog-2.4-postgresql.sql;db.changelog-2.3-postgresql.sql</customFilesToInsert>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+  </build>
+```
+
+## Developpers ##
 
 To generate master changelog, just run in your project:
 ```

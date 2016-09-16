@@ -29,7 +29,7 @@ public class LiquibaseUtils {
 	 * @throws MojoExecutionException
 	 *             An Exception
 	 */
-	public void createLiquibaseMasterChangelog(final PluginOptionsDTO pluginOptionsDTO,
+	public static void createLiquibaseMasterChangelog(final PluginOptionsDTO pluginOptionsDTO,
 			final TreeSet<File> changelogFiles) throws MojoExecutionException {
 		final String changelogMaster = "db.changelog-master-" + pluginOptionsDTO.sqlChangelogFormat + ".xml";
 		PrintWriter writer = null;
@@ -63,7 +63,8 @@ public class LiquibaseUtils {
 	 * @throws MojoExecutionException
 	 *             An exception
 	 */
-	public TreeSet<File> getLiquibaseFiles(final PluginOptionsDTO pluginOptionsDTO) throws MojoExecutionException {
+	public static TreeSet<File> getLiquibaseFiles(final PluginOptionsDTO pluginOptionsDTO)
+			throws MojoExecutionException {
 
 		final File dir = new File(pluginOptionsDTO.filesLocation);
 
@@ -83,58 +84,54 @@ public class LiquibaseUtils {
 		final TreeSet<File> files = Sets.newTreeSet(new LiquibaseComparator(pluginOptionsDTO.filePatternCustomSort));
 		files.addAll(Arrays.asList(dir.listFiles(filter)));
 
-		processCustomFiles(pluginOptionsDTO, files, Boolean.FALSE);
+		LiquibaseUtils.processCustomFilesToIgnore(pluginOptionsDTO, files);
 
-		processCustomFiles(pluginOptionsDTO, files, Boolean.TRUE);
+		LiquibaseUtils.processCustomFilesToInsert(pluginOptionsDTO, files);
 
 		return files;
 	}
 
 	/**
-	 * Process custom files (ignore or insert in master changelog)
+	 * Process custom files to ignore in master changelog.
 	 *
 	 * @param pluginOptionsDTO
 	 *            The DTO with Maven plugin Options
 	 * @param files
 	 *            The files to add in master changelog
-	 * @param insert
-	 *            TRUE is insert file in TreeSet files, false otherwise
 	 */
-	private void processCustomFiles(final PluginOptionsDTO pluginOptionsDTO, final TreeSet<File> files,
-			final Boolean insert) {
-		final String customFilesStr = getCustomFilesToProcess(pluginOptionsDTO, insert);
+	private static void processCustomFilesToIgnore(final PluginOptionsDTO pluginOptionsDTO, final TreeSet<File> files) {
 
-		if (StringUtils.isNotEmpty(customFilesStr)) {
-			final String[] customFiles = customFilesStr.split(";");
+		if (StringUtils.isNotEmpty(pluginOptionsDTO.customFilesToIgnore)) {
+			final String[] customFiles = pluginOptionsDTO.customFilesToIgnore.split(";");
 			for (final String customFile : customFiles) {
 
 				final File file = new File(pluginOptionsDTO.filesLocation + File.separator + customFile);
 				if (file.exists()) {
-					if (insert) {
-						files.add(file);
-					} else {
-						files.remove(file);
-					}
+					files.remove(file);
 				}
 			}
 		}
 	}
 
 	/**
-	 * Get the custom files to process (ignore or insert in master changelog)
+	 * Process custom files to insert in master changelog.
 	 *
 	 * @param pluginOptionsDTO
 	 *            The DTO with Maven plugin Options
-	 * @param insert
-	 *            TRUE is insert file in TreeSet files, false otherwise
-	 * @return The String of custom files
+	 * @param files
+	 *            The files to add in master changelog
 	 */
-	private String getCustomFilesToProcess(final PluginOptionsDTO pluginOptionsDTO, final Boolean insert) {
-		if (insert) {
-			return pluginOptionsDTO.customFilesToInsert;
-		} else {
-			return pluginOptionsDTO.customFilesToIgnore;
+	private static void processCustomFilesToInsert(final PluginOptionsDTO pluginOptionsDTO, final TreeSet<File> files) {
+
+		if (StringUtils.isNotEmpty(pluginOptionsDTO.customFilesToInsert)) {
+			final String[] customFiles = pluginOptionsDTO.customFilesToInsert.split(";");
+			for (final String customFile : customFiles) {
+
+				final File file = new File(pluginOptionsDTO.filesLocation + File.separator + customFile);
+				if (file.exists()) {
+					files.add(file);
+				}
+			}
 		}
 	}
-
 }
