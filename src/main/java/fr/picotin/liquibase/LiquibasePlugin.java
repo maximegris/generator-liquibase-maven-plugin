@@ -27,6 +27,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import fr.picotin.liquibase.dto.PluginOptionsDTO;
 import fr.picotin.liquibase.utils.LiquibaseUtils;
 
 
@@ -80,13 +81,14 @@ public class LiquibasePlugin extends AbstractMojo {
         LiquibaseUtils liquibaseUtils = new LiquibaseUtils();
 
         this.displayConfigurationLogs();
+        PluginOptionsDTO pluginOptionsDTO = this.setPluginOptionsDTO();
 
         getLog().info("Get Liquibase files in project... ");
-        TreeSet<File> files = liquibaseUtils.getLiquibaseFiles(filesLocation, filePattern, filePatternCustomSort, customFilesToIgnore, customFilesToInsert);
+        TreeSet<File> files = liquibaseUtils.getLiquibaseFiles(pluginOptionsDTO);
         getLog().info("Files found : " + files.size());
 
         getLog().info("Generate Changelog master...");
-        liquibaseUtils.createLiquibaseMasterChangelog(filesLocation, sqlChangelogFormat, liquibaseVersion, files);
+        liquibaseUtils.createLiquibaseMasterChangelog(pluginOptionsDTO, files);
         getLog().info("Changelog master generated!");
     }
 
@@ -101,5 +103,25 @@ public class LiquibasePlugin extends AbstractMojo {
         getLog().info("File Pattern Custom Sort is : " + filePatternCustomSort);
         getLog().info("Custom Files to ignore are : " + customFilesToIgnore);
         getLog().info("Custom Files to insert are : " + customFilesToInsert);
+    }
+    
+    /**
+     * Set Maven plugin options.
+     * 
+     * @return The DTO with Maven plugin Options.
+     */
+    private PluginOptionsDTO setPluginOptionsDTO() {
+    	PluginOptionsDTO dto = new PluginOptionsDTO();
+
+    	dto.liquibaseVersion= liquibaseVersion;		
+		dto.filesLocation = filesLocation;		
+		dto.sqlChangelogFormat=sqlChangelogFormat;
+		dto.filePattern=filePattern;
+		dto.filePatternCustomSort=filePatternCustomSort;
+		dto.customFilesToIgnore=customFilesToIgnore;
+		dto.customFilesToInsert=customFilesToInsert;
+		
+		return dto;
+    	
     }
 }

@@ -16,6 +16,7 @@ import com.google.common.collect.Sets;
 
 import fr.picotin.liquibase.comparator.LiquibaseComparator;
 import fr.picotin.liquibase.constants.LiquibaseConstants;
+import fr.picotin.liquibase.dto.PluginOptionsDTO;
 
 
 public class LiquibaseUtils {
@@ -23,19 +24,17 @@ public class LiquibaseUtils {
     /**
      * Create liquibase master changelog.
      *
-     * @param destFolder The destination folder of master changelog file
-     * @param sqlType The sql type of master changelog file
-     * @param liquibaseVersion The version of liquibase to target
+     * @param pluginOptionsDTO The DTO with Maven plugin Options
      * @param changelogFiles The list of changelog files
      * @throws MojoExecutionException An Exception
      */
-    public void createLiquibaseMasterChangelog(final String destFolder, final String sqlType, final String liquibaseVersion, final TreeSet<File> changelogFiles)
+    public void createLiquibaseMasterChangelog(final PluginOptionsDTO pluginOptionsDTO, final TreeSet<File> changelogFiles)
             throws MojoExecutionException {
-        String changelogMaster = "db.changelog-master-" + sqlType + ".xml";
+        String changelogMaster = "db.changelog-master-" + pluginOptionsDTO.sqlChangelogFormat + ".xml";
         PrintWriter writer = null;
         try {
-            writer = new PrintWriter(destFolder + File.separator + changelogMaster, "UTF-8");
-            writer.println(LiquibaseConstants.XML_START.replace("${sqlType}", sqlType).replace("${liquibaseVersion}", liquibaseVersion));
+            writer = new PrintWriter(pluginOptionsDTO.filesLocation + File.separator + changelogMaster, "UTF-8");
+            writer.println(LiquibaseConstants.XML_START.replace("${sqlType}", pluginOptionsDTO.sqlChangelogFormat).replace("${liquibaseVersion}", pluginOptionsDTO.liquibaseVersion));
 
             for (File file : changelogFiles) {
                 writer.println("  <include file=\"" + file.getName() + "\" relativeToChangelogFile=\"true\"/>");
@@ -56,38 +55,33 @@ public class LiquibaseUtils {
     /**
      * Get liquibase changelog files.
      *
-     * @param srcFolder The folder to inspect
-     * @param filePattern The sql type of liquibase file to search
-     * @param filePatternCustomSort The custom pattern to sort files
-     * @param customFilesToIgnore List of files to ignore in master changelog
-     * @param customFilesToInsert List of additional files to insert
+     * @param pluginOptionsDTO The DTO with Maven plugin Options
      * @return The list of files
      * @throws MojoExecutionException An exception
      */
-    public TreeSet<File> getLiquibaseFiles(final String srcFolder, final String filePattern, final String filePatternCustomSort,
-            final String customFilesToIgnore, final String customFilesToInsert) throws MojoExecutionException {
+    public TreeSet<File> getLiquibaseFiles(final PluginOptionsDTO pluginOptionsDTO) throws MojoExecutionException {
 
-        File dir = new File(srcFolder);
+        File dir = new File(pluginOptionsDTO.filesLocation);
 
         if (dir == null || !dir.isDirectory()) {
-            throw new MojoExecutionException("Directory " + srcFolder + " doesn't exists");
+            throw new MojoExecutionException("Directory " + pluginOptionsDTO.filesLocation + " doesn't exists");
         }
 
         FilenameFilter filter = new FilenameFilter() {
             public boolean accept(File dir, String name) {
-                if (StringUtils.isNotEmpty(filePattern)) {
-                    return name.matches(filePattern);
+                if (StringUtils.isNotEmpty(pluginOptionsDTO.filePattern)) {
+                    return name.matches(pluginOptionsDTO.filePattern);
                 }
                 return true;
             }
         };
 
-        TreeSet<File> files = Sets.newTreeSet(new LiquibaseComparator(filePatternCustomSort));
+        TreeSet<File> files = Sets.newTreeSet(new LiquibaseComparator(pluginOptionsDTO.filePatternCustomSort));
         files.addAll(Arrays.asList(dir.listFiles(filter)));
 
-        this.processCustomFiles(srcFolder, files, customFilesToIgnore, Boolean.FALSE);
+        this.processCustomFiles(pluginOptionsDTO, files, Boolean.FALSE);
 
-        this.processCustomFiles(srcFolder, files, customFilesToInsert, Boolean.TRUE);
+        this.processCustomFiles(pluginOptionsDTO, files, Boolean.TRUE);
 
         return files;
     }
@@ -95,17 +89,18 @@ public class LiquibaseUtils {
     /**
      * Process custom files (ignore or insert in master changelog)
      *
-     * @param srcFolder The folder to inspect
+     * @param pluginOptionsDTO The DTO with Maven plugin Options
      * @param files The files to add in master changelog
-     * @param customFilesStr The custom files to process (string)
      * @param insert TRUE is insert file in TreeSet files, false otherwise
      */
-    public void processCustomFiles(final String srcFolder, final TreeSet<File> files, final String customFilesStr, final boolean insert) {
+    private void processCustomFiles(final PluginOptionsDTO pluginOptionsDTO, final TreeSet<File> files, final Boolean insert) {
+    	String customFilesStr = this.getCustomFilesToProcess(pluginOptionsDTO, insert);
+
         if (StringUtils.isNotEmpty(customFilesStr)) {
             String[] customFiles = customFilesStr.split(";");
             for (String customFile : customFiles) {
 
-                File file = new File(srcFolder + File.separator + customFile);
+                File file = new File(pluginOptionsDTO.filesLocation + File.separator + customFile);
                 if (file.exists()) {
                     if (insert) {
                         files.add(file);
@@ -115,6 +110,21 @@ public class LiquibaseUtils {
                 }
             }
         }
+    }
+    
+    /**
+     * Get the custom files to process (ignore or insert in master changelog)
+     *
+     * @param pluginOptionsDTO The DTO with Maven plugin Options
+     * @param insert TRUE is insert file in TreeSet files, false otherwise
+     * @return The String of custom files
+     */
+    private String getCustomFilesToProcess(final PluginOptionsDTO pluginOptionsDTO, final Boolean insert) {
+    	if (insert) {
+    		return pluginOptionsDTO.customFilesToInsert;
+    	} else {
+    		return pluginOptionsDTO.customFilesToIgnore;
+    	}
     }
 
 }
