@@ -29,11 +29,11 @@ Here is and example that will generate a db.changelog-master-postgresql.xml.
   </build>
 ```
 
-Configuration options (optional)
+Configuration options (all are optionals)
 
 | Alias  | Values  | Default  |
 |---|---|---|
-| liquibaseVersion | Liquibase version to target | 3.1 |
+| liquibaseVersion | Liquibase version to target (XSD headers in XML) | 3.1 |
 | filesLocation | Directory of changelogs files. Must be defined with ${basedir} when using Maven module pattern  | src/main/resources |
 | sqlChangelogFormat | Type of master changelog to generate  - oracle, postgresql,... (exemple db.changelog-master-postgresql.xml) | postgresql |
 | filePattern | Pattern of file to add in master changelog. Get all files in resources directory if not defined | Empty string |

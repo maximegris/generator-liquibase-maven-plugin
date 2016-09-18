@@ -15,28 +15,28 @@ import com.google.common.collect.Sets;
 
 import fr.picotin.liquibase.comparator.LiquibaseComparator;
 import fr.picotin.liquibase.constants.LiquibaseConstants;
-import fr.picotin.liquibase.dto.PluginOptionsDTO;
+import fr.picotin.liquibase.domain.PluginOptions;
 
 public class LiquibaseUtils {
 
 	/**
 	 * Create liquibase master changelog.
 	 *
-	 * @param pluginOptionsDTO
+	 * @param pluginOptions
 	 *            The DTO with Maven plugin Options
 	 * @param changelogFiles
 	 *            The list of changelog files
 	 * @throws MojoExecutionException
 	 *             An Exception
 	 */
-	public static void createLiquibaseMasterChangelog(final PluginOptionsDTO pluginOptionsDTO,
+	public static void createLiquibaseMasterChangelog(final PluginOptions pluginOptions,
 			final TreeSet<File> changelogFiles) throws MojoExecutionException {
-		final String changelogMaster = "db.changelog-master-" + pluginOptionsDTO.sqlChangelogFormat + ".xml";
+		final String changelogMaster = "db.changelog-master-" + pluginOptions.sqlChangelogFormat + ".xml";
 		PrintWriter writer = null;
 		try {
-			writer = new PrintWriter(pluginOptionsDTO.filesLocation + File.separator + changelogMaster, "UTF-8");
-			writer.println(LiquibaseConstants.XML_START.replace("${sqlType}", pluginOptionsDTO.sqlChangelogFormat)
-					.replace("${liquibaseVersion}", pluginOptionsDTO.liquibaseVersion));
+			writer = new PrintWriter(pluginOptions.filesLocation + File.separator + changelogMaster, "UTF-8");
+			writer.println(LiquibaseConstants.XML_START.replace("${sqlType}", pluginOptions.sqlChangelogFormat)
+					.replace("${liquibaseVersion}", pluginOptions.liquibaseVersion));
 
 			for (final File file : changelogFiles) {
 				writer.println("  <include file=\"" + file.getName() + "\" relativeToChangelogFile=\"true\"/>");
@@ -57,36 +57,35 @@ public class LiquibaseUtils {
 	/**
 	 * Get liquibase changelog files.
 	 *
-	 * @param pluginOptionsDTO
+	 * @param pluginOptions
 	 *            The DTO with Maven plugin Options
 	 * @return The list of files
 	 * @throws MojoExecutionException
 	 *             An exception
 	 */
-	public static TreeSet<File> getLiquibaseFiles(final PluginOptionsDTO pluginOptionsDTO)
-			throws MojoExecutionException {
+	public static TreeSet<File> getLiquibaseFiles(final PluginOptions pluginOptions) throws MojoExecutionException {
 
-		final File dir = new File(pluginOptionsDTO.filesLocation);
+		final File dir = new File(pluginOptions.filesLocation);
 
 		if (dir == null || !dir.isDirectory()) {
-			throw new MojoExecutionException("Directory " + pluginOptionsDTO.filesLocation + " doesn't exists");
+			throw new MojoExecutionException("Directory " + pluginOptions.filesLocation + " doesn't exists");
 		}
 
 		final FilenameFilter filter = new FilenameFilter() {
 			public boolean accept(File dir, String name) {
-				if (StringUtils.isNotEmpty(pluginOptionsDTO.filePattern)) {
-					return name.matches(pluginOptionsDTO.filePattern);
+				if (StringUtils.isNotEmpty(pluginOptions.filePattern)) {
+					return name.matches(pluginOptions.filePattern);
 				}
 				return true;
 			}
 		};
 
-		final TreeSet<File> files = Sets.newTreeSet(new LiquibaseComparator(pluginOptionsDTO.filePatternCustomSort));
+		final TreeSet<File> files = Sets.newTreeSet(new LiquibaseComparator(pluginOptions.filePatternCustomSort));
 		files.addAll(Arrays.asList(dir.listFiles(filter)));
 
-		LiquibaseUtils.processCustomFilesToIgnore(pluginOptionsDTO, files);
+		LiquibaseUtils.processCustomFilesToIgnore(pluginOptions, files);
 
-		LiquibaseUtils.processCustomFilesToInsert(pluginOptionsDTO, files);
+		LiquibaseUtils.processCustomFilesToInsert(pluginOptions, files);
 
 		return files;
 	}
@@ -94,18 +93,18 @@ public class LiquibaseUtils {
 	/**
 	 * Process custom files to ignore in master changelog.
 	 *
-	 * @param pluginOptionsDTO
+	 * @param pluginOptions
 	 *            The DTO with Maven plugin Options
 	 * @param files
 	 *            The files to add in master changelog
 	 */
-	private static void processCustomFilesToIgnore(final PluginOptionsDTO pluginOptionsDTO, final TreeSet<File> files) {
+	private static void processCustomFilesToIgnore(final PluginOptions pluginOptions, final TreeSet<File> files) {
 
-		if (StringUtils.isNotEmpty(pluginOptionsDTO.customFilesToIgnore)) {
-			final String[] customFiles = pluginOptionsDTO.customFilesToIgnore.split(";");
+		if (StringUtils.isNotEmpty(pluginOptions.customFilesToIgnore)) {
+			final String[] customFiles = pluginOptions.customFilesToIgnore.split(";");
 			for (final String customFile : customFiles) {
 
-				final File file = new File(pluginOptionsDTO.filesLocation + File.separator + customFile);
+				final File file = new File(pluginOptions.filesLocation + File.separator + customFile);
 				if (file.exists()) {
 					files.remove(file);
 				}
@@ -116,18 +115,18 @@ public class LiquibaseUtils {
 	/**
 	 * Process custom files to insert in master changelog.
 	 *
-	 * @param pluginOptionsDTO
+	 * @param pluginOptions
 	 *            The DTO with Maven plugin Options
 	 * @param files
 	 *            The files to add in master changelog
 	 */
-	private static void processCustomFilesToInsert(final PluginOptionsDTO pluginOptionsDTO, final TreeSet<File> files) {
+	private static void processCustomFilesToInsert(final PluginOptions pluginOptions, final TreeSet<File> files) {
 
-		if (StringUtils.isNotEmpty(pluginOptionsDTO.customFilesToInsert)) {
-			final String[] customFiles = pluginOptionsDTO.customFilesToInsert.split(";");
+		if (StringUtils.isNotEmpty(pluginOptions.customFilesToInsert)) {
+			final String[] customFiles = pluginOptions.customFilesToInsert.split(";");
 			for (final String customFile : customFiles) {
 
-				final File file = new File(pluginOptionsDTO.filesLocation + File.separator + customFile);
+				final File file = new File(pluginOptions.filesLocation + File.separator + customFile);
 				if (file.exists()) {
 					files.add(file);
 				}
