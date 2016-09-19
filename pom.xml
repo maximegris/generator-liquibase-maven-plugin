@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.maximegris</groupId>
 	<artifactId>generator-liquibase-maven-plugin</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<packaging>maven-plugin</packaging>
 
 	<name>generator-liquibase-maven-plugin Maven Plugin</name>
@@ -14,7 +14,7 @@
 		<url>https://github.com/maximegris/generator-liquibase-maven-plugin</url>
 		<connection>scm:git:git@github.com/maximegris/generator-liquibase-maven-plugin.git</connection>
 		<developerConnection>scm:git:git@github.com/maximegris/generator-liquibase-maven-plugin.git</developerConnection>
-		<tag>1.0.0</tag>
+		<tag>1.0.1</tag>
 	</scm>
 
 	<licenses>
