@@ -3,8 +3,11 @@
 .classpath
 .project
 .settings
-generated-src
-build
-target
-bin
-temp
+.factorypath
+
+target/
+build/
+generated-src/
+bin/
+temp/
+.vscode/

@@ -12,8 +12,6 @@ import java.util.TreeSet;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.plexus.util.StringUtils;
 
-import com.google.common.collect.Sets;
-
 import fr.picotin.liquibase.comparator.LiquibaseComparator;
 import fr.picotin.liquibase.constants.LiquibaseConstants;
 import fr.picotin.liquibase.domain.PluginOptions;
@@ -62,7 +60,7 @@ public class LiquibaseUtils {
     public static TreeSet<File> getLiquibaseFiles(final PluginOptions pluginOptions) throws MojoExecutionException {
 
         final File dir = new File(pluginOptions.filesLocation);
-        System.out.println("file locationnnnnnnnn: " + pluginOptions.filesLocation);
+        System.out.println("file location: " + pluginOptions.filesLocation);
         System.out.println("file filePattern: " + pluginOptions.filePattern);
         if (dir == null || !dir.isDirectory()) {
             throw new MojoExecutionException("Directory " + pluginOptions.filesLocation + " doesn't exists");
@@ -77,7 +75,7 @@ public class LiquibaseUtils {
             }
         };
 
-        final TreeSet<File> files = Sets.newTreeSet(new LiquibaseComparator(pluginOptions.filePatternCustomSort));
+        final TreeSet<File> files = new TreeSet<File>(new LiquibaseComparator(pluginOptions.filePatternCustomSort));
         files.addAll(Arrays.asList(dir.listFiles(filter)));
 
         LiquibaseUtils.processCustomFilesToIgnore(pluginOptions, files);
