@@ -1,9 +1,10 @@
 sudo: false
 language: java
 jdk:
-  - oraclejdk8
-  - oraclejdk7
-  - openjdk6
+  - openjdk11
+  - openjdk12
+  - oraclejdk11
+  - oraclejdk12
 script:
   - mvn clean install
 notifications:
