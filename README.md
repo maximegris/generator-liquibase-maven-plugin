@@ -35,7 +35,7 @@ Configuration options (all are optionals)
 |---|---|---|
 | liquibaseVersion | Liquibase version to target (XSD headers in XML) | 3.1 |
 | filesLocation | Directory of changelogs files. Must be defined with ${basedir} when using Maven module pattern  | src/main/resources |
-| sqlChangelogFormat | Type of master changelog to generate  - oracle, postgresql,... (exemple db.changelog-master-postgresql.xml) | postgresql |
+| sqlChangelogFormat | Type of master changelog to generate  - oracle, postgresql,... (example db.changelog-master-postgresql.xml) | postgresql |
 | filePattern | Pattern of file to add in master changelog. Get all files in resources directory if not defined | * |
 | filePatternCustomSort | Apply a custom sort pattern on some files. During comparison, if one or both files don't match the pattern, it use String.equals | Empty string |
 | customFilesToIgnore | List of file to ignore/remove of master changelog. Use ; to separate them | Empty string |
